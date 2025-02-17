@@ -1,0 +1,156 @@
+
+form
+{
+    width: 700px;
+    min-width: 375px;
+    min-height: 350px;
+    background-color: #034400;
+    border: 1px solid #81a47f;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: auto;
+    border-radius: 10px;
+    align-items: center;
+    position: relative;
+    flex-wrap: wrap;
+
+    && > .submit
+    {
+        position: absolute;
+        bottom: 20px;
+    }
+}
+#login
+{
+    max-width: 375px;
+    max-height: 350px;
+    min-width: 375px;
+    min-height: 350px;
+    background-color: #034400;
+    border: 1px solid #81a47f;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: auto;
+    border-radius: 10px;
+    align-items: center;
+    position: relative;
+    margin-top: 200px;
+
+    && > .submit
+    {
+        position: absolute;
+        bottom: 20px;
+    }
+}
+
+#login
+{
+    margin-top: 200px;
+    && > input
+    {
+        width: 80%;
+        height: 40px;
+        margin: 15px 0;
+    }
+}
+
+input
+{
+    width: 300px;
+    height: 40px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.9em;
+    background-color: transparent;
+    border: none;
+    margin: 10px 0;
+    &&:hover
+    {
+        cursor: pointer;
+    }
+}
+
+.search
+{
+    width: 90%;
+    height: 45px;
+    background-color: #81a47f;
+    border: 2px solid black;
+    position: fixed;
+    top: 5px;
+    left: 5%;
+}
+
+
+button
+{
+    width: 90px;
+    height: 40px;
+    background-color: white;
+    color: #034400;
+    border: none;
+    border-radius: 10px;
+    margin: 15px 30%;
+    &&:hover
+    {
+        cursor: pointer;
+        border: 2px solid #034400;
+    }
+}
+
+img
+{
+    width: 150px;
+    height: 120px;
+    margin: 0 500px;
+}
+
+h2
+{
+    font-family: Segoe UI;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    font-weight: lighter;
+    margin-top: 35px;
+}
+
+div
+{
+    width: 75%;
+    height: 50px;
+    display: flex;
+    justify-content: flex-start;
+
+}
+
+.register
+{
+    max-height: 40px;
+    width: 35%;
+    font-size: 0.95rem;
+    border: 0.5px solid black;
+    box-shadow: 0 0 7px black;
+    background: white;
+    margin: 15px 0;
+    &&:nth-child(2),
+    &&:nth-child(4),
+    &&:nth-child(6),
+    &&:nth-child(8)
+    {
+        margin-right: 50px;
+    }
+
+    &&:focus{
+        outline: black;
+    }
+}
+
+input[type="radio"]
+{
+    height: 20px;
+    width: 20px;
+    margin-left: 250px;
+}
