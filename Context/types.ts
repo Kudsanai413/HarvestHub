@@ -54,6 +54,18 @@ type Response =
     user_type?: string,
 }
 
+type Request =
+{
+    request: string,
+    farmer: string,
+    buyer: string,
+    crop: string,
+    quantity: number,
+    price: number,
+    status: string,
+    created: string
+}
+
 
 type UserType =
 {
@@ -66,4 +78,4 @@ type UserType =
 
 
 
-export { ActionType, AlertProps, button, ChildrenType, ContractType, ProduceType, Response, UserType,  };
+export { ActionType, AlertProps, button, ChildrenType, ContractType, ProduceType, Request, Response, UserType,  };

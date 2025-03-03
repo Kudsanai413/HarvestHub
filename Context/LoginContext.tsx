@@ -106,8 +106,8 @@ export const LoginContextProvider = ( { children } : ChildrenType ) : React.JSX.
                                 return user
                             }).then( (user : Response) =>
                                 {
-                                    if (user.user_type === "Farmers") navigator.push("/(farmer)/Home")
-                                    else if (user.user_type === "Buyers") navigator.push("/(buyers)/Home")
+                                    if (user.user_type === "Farmers") navigator.push("/Drawer/(farmer)/FarmerHome")
+                                    else if (user.user_type === "Buyers") navigator.push("/Drawer/(buyers)/BuyerHome")
                                     else throw new Error("Page Not Found")
                                 }).catch( error =>
                                     {

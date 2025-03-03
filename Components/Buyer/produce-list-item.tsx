@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, Pressable, Appearance } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import useGetFileContext from '@/Context/FileContext'
 import { ProduceType, Response, UserType } from '@/Context/types'
 import { useRouter } from 'expo-router'
@@ -39,10 +39,11 @@ export default function ProduceListItem({ produce } : props) : React.JSX.Element
     const [location, setLocation] = useState<string>("Bulawayo");
     const [in_stock, setInStock] = useState<boolean>(false);
     const navigate_to = useRouter();
+    const [locale, setLocale ] = useState<string>("")
 
-    const getFarmer = (id : string) : string =>
+    useEffect( () =>
     {
-        fetch(`${ database }/get/Farmers/Location/${id}`)
+        fetch(`${ database }/get/Farmers/Location/${produce.farmerID}`)
                 .then(response =>
                     {
                         if (!response.ok) throw new Error("Failed To Fetch Selling Farmer");
@@ -51,25 +52,22 @@ export default function ProduceListItem({ produce } : props) : React.JSX.Element
                         return response.json()
                     }).then( (farmer : Response) =>
                         {
-                            setLocation(farmer.data)
+                            setLocale(farmer.data)
                         }).catch(error => console.log(error.message));
-
-
-        return " | "
-    }
+    }, [])
 
   return (
     <>
         <Pressable
             style={ [styles.list_item] }
-            onPress={ () =>{ alert(produce.produceID), navigate_to.push(`/buyer-produce/${produce.produceID}`)}}
+            onPress={ () =>{ navigate_to.push(`/buyer-produce/${produce.produceID}`)}}
         >
             <Text style={ styles.text }>{ produce.produceType }</Text>
             <Text>${ produce.price}/{produce.unit_type}</Text>
             <View style={ styles.locationBand }>
                 <Text style={ styles.locationText }><Octicons name='graph' color={"#034400"} size={14}/> { produce.quantity <= 0 ? "Out Of Stock" : "In Stock" } </Text>
-                <Text>{ getFarmer(produce.farmerID) }</Text>
-                <Text style={ styles.locationText } ><Entypo name='location' color={"#034400"} size={14}/> { location }</Text>
+                <Text>|</Text>
+                <Text style={ styles.locationText } ><Entypo name='location' color={"#034400"} size={14}/> { locale }</Text>
             </View>
             <Image source={ getImage(produce.produceType) } style={ styles.produce }/>
         </Pressable>

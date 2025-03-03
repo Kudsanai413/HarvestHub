@@ -12,35 +12,26 @@ export default function Layout()
     return(
         <Tabs
             screenOptions={{
-                // tabBarActiveBackgroundColor: "rgba(6, 122, 0, 0.45)",
+                headerShown: false,
                 tabBarActiveTintColor: '#067c00',
                 tabBarInactiveTintColor: 'gray',
-                headerShown: false,
                 tabBarStyle: {
                     backgroundColor: Appearance.getColorScheme() === "dark" ? app_colors.dark_bg : app_colors.white,
                     borderTopWidth: 1,
                     borderTopColor: '#067c00',
                     height: 60,
+                    justifyContent: "center"
                 },
 
             }}
         >
             <Tabs.Screen
-                name="Home"
+                name="BuyerHome"
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ color }) => <TabIcon color={ color } size={26} icon="home" iconType='fontawesome'/>,
                 }}
             />
-
-            <Tabs.Screen
-                name="FarmerProduce"
-                options={{
-                    title: "My Produce",
-                    tabBarIcon: ({ color }) => <TabIcon color={ color } size={26} icon="leaf" iconType="fontawesome"/>
-                }}
-            />
-
             <Tabs.Screen
                 name="Search"
                 options={{
@@ -48,7 +39,13 @@ export default function Layout()
                     tabBarIcon: ({ color }) => <TabIcon color={color} size={26} icon="search" iconType="fontawesome"/>
                 }}
             />
-
+            <Tabs.Screen
+                name="Produce-List"
+                options={{
+                    title: 'Produce Store',
+                    tabBarIcon: ({ color }) => <TabIcon color={ color } size={26} icon="store" iconType='material'/>,
+                }}
+            />
         </Tabs>
     );
 }

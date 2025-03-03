@@ -25,7 +25,10 @@ export default function StackLayout() {
                                         }}
                                     >
                                         <Stack.Screen name="index" />
-                                        <Stack.Screen name="(Drawer)/"/>
+                                        <Stack.Screen name="(farmer)/" />
+                                        <Stack.Screen name="(buyers)/"/>
+                                        <Stack.Screen name="buyer-produce/"/>
+
                                     </Stack>
 							</AlertContextProvider>
 						</ProductContextProvider>

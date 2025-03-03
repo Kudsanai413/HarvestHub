@@ -1,17 +1,17 @@
-import { View, Text, TextInput, StyleSheet, FlatList, ScrollView, Image } from 'react-native'
+import { View, Text, TextInput, StyleSheet, FlatList, ScrollView, Image, Pressable } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import useGetFileContext from '@/Context/FileContext';
 import { styling as global } from '@/assets/styles/global';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { app_colors } from '@/assets/styles/colors';
-import { ContractType, Response, UserType } from '@/Context/types';
-import { database } from '@/assets/reusable/api';
+import { ContractType, Response, UserType, Request } from '@/Context/types';
+import { createObject, database, Request as GetRequests } from '@/assets/reusable/api';
 import ProduceCard from '@/Components/Buyer/ProduceCard';
 import ProduceCardSkeleton from '@/Components/Skeletons/ProduceCardSkeleton';
 import useGetLoginContext from '@/Context/LoginContext';
 import { formatName } from '@/assets/reusable/constants';
 import ContractCard from '@/Components/Farmer/contract-card';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
+import { DrawerActions } from "@react-navigation/native";
 
 const initState =
 {
@@ -26,8 +26,10 @@ export default function Home() {
     const [PotentialBuyers, setPotentialBuyers] = useState<UserType[]>([]);
     const [contractRequests, setContractRequests] = useState<ContractType[]>([]);
     const [state, setState] = useState<typeof initState>(initState);
+    const [req, setReqs] = useState<number>(0);
     const loaded = useRef<boolean>(false);
     const navigation = useRouter();
+    const navigator = useNavigation();
     useEffect(() =>
     {
         if (!loaded.current)
@@ -52,13 +54,37 @@ export default function Home() {
             }).then( (contracts : Response) =>
                 {
                     setContractRequests(contracts.data);
-                })
+                }).catch(error => console.log("An Error Occured"))
+
+            const object = createObject("POST", {
+				"id": user_state.user.userID,
+				column: user_state.user_type === "Farmers" ? "FarmerID" : "BuyerID"
+			});
+
+			GetRequests(`${ database }/get/Requests`, object)
+						.then( (req : Response) => {
+							if ( req.data )
+							{
+								const read = req.data.filter( (request : Request) => request.status === "Accepted");
+								const rejects = req.data.filter( (request : Request) => request.status === "Rejected");
+								const  unread = req.data.filter( (request : Request) => request.status === "Pending");
+
+								setReqs(unread.length)
+							}
+						})
+
         }
     });
     return (
         <>
             <View style={ global.header}>
-                <MaterialCommunityIcons name="menu" size={35} color={ app_colors.secondary }/>
+                <Pressable
+                    onPress={() => {
+                        navigator.dispatch(DrawerActions.openDrawer())
+                    }}
+                >
+                    <MaterialCommunityIcons name="menu" size={35} color={ app_colors.secondary }/>
+                </Pressable>
                 <Image source={ require("@/assets/images/user.jpg")} style={{ width: 50, height: 50, borderRadius: 50, marginVertical: "auto" }}/>
             </View>
             <ScrollView
@@ -80,11 +106,13 @@ export default function Home() {
                         <Text style={ styles.num_bubble }>{ 39 }</Text>
                         <Text> Contracts</Text>
                     </View>
-                    <View style={ styles.tile }>
-                        <MaterialCommunityIcons name="truck-delivery" color={ app_colors.tetiary } size={ 28 }/>
-                        <Text style={ styles.num_bubble }>{ state.deliveries }</Text>
-                        <Text> Deliveries</Text>
-                    </View>
+                    <Pressable style={ styles.tile }
+                        onPress={ () => navigation.push("/Drawer/Requests")}
+                    >
+                        <MaterialCommunityIcons name="email-receive-outline" color={ app_colors.tetiary } size={ 28 }/>
+                        <Text style={ styles.num_bubble }>{ req }</Text>
+                        <Text> Buyer Requests </Text>
+                    </Pressable>
                 </View>
                 <Text style={ [global.title, global.left_title] }>{ user_state.user.main_crop } Buyers In Your Area</Text>
                 {

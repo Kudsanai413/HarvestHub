@@ -105,8 +105,7 @@ export function UserContextProvider({ children } : ChildrenType ) : React.JSX.El
     const { state : logged, dispatch : login } = useGetLoginContext();
     const navigator = useRouter();
     const { Alert } = useGenerateAlert();
-    const loaded = useRef<boolean>(false)
-    alert("Hello")
+    const loaded = useRef<boolean>(false);
     useEffect(() =>
     {
         if (loaded.current)

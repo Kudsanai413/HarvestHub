@@ -20,13 +20,12 @@ export default function CustomTextBox( {title, contents, typing, action, width} 
             <View style={ {...box.container, width: width} }>
                 <Text style={ box.title }>{ title }</Text>
                 <TextInput
-                    value={ contents.toString() }
+                    value={ contents }
                     placeholder={ title }
                     onChangeText={ (text) => typing({ type: action, payload: text})}
                     style={ box.textfield }
                     textAlignVertical='center'
                     textAlign="center"
-
                 />
             </View>
         </>
@@ -51,7 +50,7 @@ export default function CustomTextBox( {title, contents, typing, action, width} 
                 top: -15,
                 fontFamily: font.family,
                 fontSize: 10,
-                color: app_colors.tetiary,
+                color: app_colors.black,
                 left: 0,
             },
 
