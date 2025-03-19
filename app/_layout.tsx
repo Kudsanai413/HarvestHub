@@ -8,6 +8,8 @@ import React from 'react';
 import { useColorScheme } from 'react-native';
 import { AlertContextProvider } from '@/Context/AlertContext';
 import { createDrawerNavigator, DrawerContent, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
+import { UpdatesContextProvider } from '@/Context/UpdatesContext';
+import ApplicationContext, { ApplicationContextProvider } from '@/Context/ApplicationContext';
 
 export default function StackLayout() {
 	const colorScheme = useColorScheme();
@@ -18,16 +20,20 @@ export default function StackLayout() {
 				<UserContextProvider>
 					<LoginContextProvider>
 						<ProductContextProvider>
-							<AlertContextProvider>
-                                    <Stack
-                                        screenOptions={{
-                                            headerShown: false
-                                        }}
-                                    >
-                                        <Stack.Screen name="index" />
-                                        <Stack.Screen name="(Drawer)/"/>
-                                    </Stack>
-							</AlertContextProvider>
+							<UpdatesContextProvider>
+								<AlertContextProvider>
+									<ApplicationContextProvider>
+										<Stack
+											screenOptions={{
+												headerShown: false
+											}}
+											>
+											<Stack.Screen name="index" />
+											<Stack.Screen name="(Drawer)/"/>
+										</Stack>
+									</ApplicationContextProvider>
+								</AlertContextProvider>
+							</UpdatesContextProvider>
 						</ProductContextProvider>
 					</LoginContextProvider>
 				</UserContextProvider>

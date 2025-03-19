@@ -4,11 +4,34 @@ import React, { useEffect, useState } from 'react'
 import CustomButton from '../CustomButton'
 import { app_colors } from '@/assets/styles/colors'
 import { Request, Response } from '@/Context/types'
-import { database, Request as GetName } from '@/assets/reusable/api'
+import { createObject, database, Request as GetName } from '@/assets/reusable/api'
 
 interface props
 {
     request: Request
+}
+
+const handlaAccept = (id : string) => {
+    const object =  createObject("POST", {
+        column: "status",
+        "new-value": "Accepted",
+        id: id
+    })
+    GetName(`${ database }/update/Requests`).then( (response : Response) =>
+    {
+        alert(response.message)
+    })
+}
+const handlaReject = (id : string) => {
+    const object =  createObject("POST", {
+        column: "status",
+        "new-value": "Rejected",
+        id: id
+    })
+    GetName(`${ database }/update/Requests`, object).then( (response : Response) =>
+    {
+        alert(response.message)
+    })
 }
 
 export default function RequestCard({ request } : props) {
@@ -53,8 +76,8 @@ export default function RequestCard({ request } : props) {
             </View>
         </View>
         <View style={ requests.buttons }>
-            <CustomButton text='Accept' color={ app_colors.primary }/>
-            <CustomButton text='Reject' color="red"/>
+            <CustomButton text='Accept' color={ app_colors.primary } handleClick={ () => handlaAccept(request.request)}/>
+            <CustomButton text='Reject' color="red" handleClick={ () => handlaReject(request.request)}/>
         </View>
     </View>
   )

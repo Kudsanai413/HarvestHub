@@ -6,11 +6,18 @@ import useGetFileContext from '@/Context/FileContext'
 import CustomButton from '@/Components/CustomButton'
 import { app_colors } from '@/assets/styles/colors'
 import { styling } from '@/assets/styles/global'
+import { database, socket } from '@/assets/reusable/api'
 
 interface props
 {
     produce: ProduceType,
     style: "grid" | "list"
+}
+
+function handleDelete(id: string)
+{
+    // fetch(`${ database }/delete-produce/${ id }`).then(response => response.ok ? window.alert("Delete Successful") : window.alert("Delete Failed"));
+    socket.emit("delete-from-store", id)
 }
 
 export default function ProduceListItem({ produce, style } : props) {
@@ -44,7 +51,7 @@ export default function ProduceListItem({ produce, style } : props) {
                         <View style={ card.buttons }>
                             <CustomButton text={ 'Edit' } icon='store-edit' style={ card.button } button_type="circle"/>
 
-                            <CustomButton text={ 'Remove'} icon='delete' style={ card.button } button_type="circle"/>
+                            <CustomButton text={ 'Remove' } icon='delete' style={ card.button } button_type="circle" handleClick={ () => handleDelete(produce.produceID)}/>
                         </View>
 
                     </ImageBackgroundComponent>
@@ -55,7 +62,7 @@ export default function ProduceListItem({ produce, style } : props) {
                         <View style={ card.list_buttons }>
                             <CustomButton text={ ""} icon='store-edit' style={ card.list_button } button_type="circle"/>
 
-                            <CustomButton text={""} icon='delete' style={ card.list_button } button_type="circle"/>
+                            <CustomButton text={""} icon='delete' style={ card.list_button } button_type="circle" handleClick={ () => handleDelete(produce.produceID) }/>
                         </View>
                         </>
             }

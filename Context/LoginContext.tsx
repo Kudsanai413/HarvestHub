@@ -4,7 +4,7 @@ import { Request, createObject, database } from "@/assets/reusable/api"
 import { useRouter } from "expo-router"
 import useGetUserContext from "./UserContext"
 import useGenerateAlert from "./AlertContext"
-import { createSession } from "@/assets/reusable/constants"
+import { socket } from "@/assets/reusable/api"
 
 let Authenticate : () => void;
 
@@ -115,6 +115,24 @@ export const LoginContextProvider = ( { children } : ChildrenType ) : React.JSX.
                                         alert({ type: "error-message", payload: "Backend Did Not Send Back A Response"})
                                         alert({type: "show-alert", payload: true})
                                     })
+/*
+            socket.emit("login",{
+                user: state.user_id,
+                password: state.password
+            });
+
+            socket.on("correct-login", (user : UserType) => {
+                window.alert(JSON.stringify(user))
+                if (user) {
+                    dispatch({ type: "user", payload: user });
+                    dispatch({ type: "user-type", payload: user.user_type });
+
+                    if (user.user_type === "Farmers") navigator.push("/Drawer/(farmer)/FarmerHome");
+                    else if (user.user_type === "Buyers") navigator.push("/Drawer/(buyers)/BuyerHome");
+                    else throw new Error("Page Not Found");
+                }
+            });
+*/
         }
 
     return(

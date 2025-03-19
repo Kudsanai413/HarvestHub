@@ -77,7 +77,7 @@ export default function IndividualPage() {
                     if (!response.ok) throw new Error(`Failed To Fetch Farmer 1 - ${ currProduce.farmerID }`);
 
                     return response.json()
-                }).then( data =>
+                }).then( (data )=>
                     {
                         if ( data.length !== 1) throw new Error(`Failed To Fetch Farmer 2 - ${ currProduce.farmerID } => ${ data.data }`)
 

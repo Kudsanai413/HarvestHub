@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useReducer, useRef } from "react";
 import { ActionType, ChildrenType, ProduceType, Response } from "./types";
 import { base_url, database } from "@/assets/reusable/api";
+import useGenerateUpdates from "./UpdatesContext";
 
 const initcrop : ProduceType = {
     produceID: "",
@@ -65,6 +66,7 @@ const ProductContext = createContext<ProductContextType>({
 export const ProductContextProvider = ({ children } : ChildrenType) : React.JSX.Element =>
 {
     const [state, dispatch] = useReducer(ProductContextReducer, initReducerState);
+    const { state: updates } = useGenerateUpdates();
     const loaded = useRef<boolean>(false);
     useEffect(() =>
     {
@@ -77,7 +79,7 @@ export const ProductContextProvider = ({ children } : ChildrenType) : React.JSX.
                         return response.json();
                     }).then((produce: Response) =>
                         {
-                            produce.data ? dispatch({ type: "getAll" , payload: produce.data }) : console.log("No Records")
+                            produce.data ? dispatch({ type: "getAll" , payload: [...produce.data, ...updates.produce ] }) : console.log("No Records")
                         }).catch(error => console.log(error.message));
 
             loaded.current = true;

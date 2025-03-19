@@ -5,6 +5,7 @@ import useGetFileContext from "@/Context/FileContext";
 import useGetLoginContext from "@/Context/LoginContext";
 import { useEffect, useRef, useState } from "react";
 import { Appearance, Image, Modal, Pressable, StyleSheet, Text, View, } from "react-native";
+import { socket } from "@/assets/reusable/api";
 
 
 export default function Index() {
@@ -17,6 +18,11 @@ export default function Index() {
 
 	useEffect(() =>
 	{
+    socket.on("connecting", (example:string) => {
+      window.alert(`Socket Connected ${ example }`)
+    })
+
+
 		if (user.error.type != null && !done.current)
 		{
 			alert({ type: "error-type", payload: user.error.type})

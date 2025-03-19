@@ -52,6 +52,7 @@ type Response =
     error: string | null,
     message: string,
     user_type?: string,
+    session?: string
 }
 
 type Request =
@@ -74,6 +75,7 @@ type UserType =
     contact: string | number
     main_crop: string,
     Additional_crops: string[] | null,
+    user_type?: "Farmers" | "Buyers"
 };
 
 

@@ -12,6 +12,7 @@ import { formatName } from '@/assets/reusable/constants';
 import ContractCard from '@/Components/Farmer/contract-card';
 import { useRouter, useNavigation } from 'expo-router';
 import { DrawerActions } from "@react-navigation/native";
+import useGetApplicationContext from '@/Context/ApplicationContext';
 
 const initState =
 {
@@ -23,6 +24,7 @@ const initState =
 
 export default function Home() {
     const { state : user_state } = useGetLoginContext();
+    const { requests, produce, contracts } = useGetApplicationContext();
     const [PotentialBuyers, setPotentialBuyers] = useState<UserType[]>([]);
     const [contractRequests, setContractRequests] = useState<ContractType[]>([]);
     const [state, setState] = useState<typeof initState>(initState);
@@ -68,8 +70,8 @@ export default function Home() {
 								const read = req.data.filter( (request : Request) => request.status === "Accepted");
 								const rejects = req.data.filter( (request : Request) => request.status === "Rejected");
 								const  unread = req.data.filter( (request : Request) => request.status === "Pending");
-
-								setReqs(unread.length)
+                                const currReqs = requests.filter((request : Request) => request.farmer === user_state.user.userID)
+								setReqs(currReqs.length)
 							}
 						})
 

@@ -50,7 +50,7 @@ function CustomDrawer( { state, description } : props )
 				alignItems: "center"
 			}}
 		>
-			<Image source={ require("@/assets/images/user.jpg") } style={{ width: 120, height: 120, borderRadius: "50%"}}/>
+			<Image source={ require("@/assets/images/carrot-farmer.jpeg") } style={{ width: 120, height: 120, borderRadius: "50%"}}/>
 			<Text> Username </Text>
 
 				<Pressable

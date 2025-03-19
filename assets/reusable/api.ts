@@ -1,5 +1,8 @@
+import io from 'socket.io-client';
 const base_url : string = "http://localhost:3400";
 const database : string = "http://127.0.0.1:5000"
+
+const socket = io(database, { transports: ['websocket'] });
 
 const Request = (url : string, method_objects? : any) : Promise<string | any> =>
 {
@@ -30,4 +33,4 @@ const createObject = (method: string, contents: any) : any =>
 }
 
 
-export { base_url, createObject, database, Request };
+export { base_url, createObject, database, Request, socket };
