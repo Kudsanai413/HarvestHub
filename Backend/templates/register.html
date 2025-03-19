@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for("static", filename="style.css")}}"/>
+        <link rel="stylesheet" href="{{url_for("static", filename="reg.css")}}"/>
+
+        <title>Document</title>
+    </head>
+    <body>
+        <form method="post" action="#" id="register-form">
+            <img src="{{url_for("static", filename="hb3.png")}}"/>
+            <input type="text" class="register" required name="national-id" placeholder="National ID"/>
+            <input type="text" class="register" required name="full-name" placeholder="Full Name"/>
+            <input type="date" class="register" required name="date-of-birth" placeholder="date-of-birth"/>
+            <input type="text" class="register" required name="contact" placeholder="contact"/>
+            <input type="text" class="register" required name="location" placeholder="location"/>
+            <input type="text" class="register" required name="main-crop" placeholder="main crop"/>
+            <input type="text" class="register" name="additional-crops" placeholder="additional crops"/>
+            <input type="password" class="register" name="password" placeholder="password"/>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <input type="radio" name="user-type" value="Farmers">Farmer
+                <input type="radio" name="user-type" value="Buyers">Buyer
+            <button>Confirm</button>
+        </form>
+
+    </body>
+</html>
