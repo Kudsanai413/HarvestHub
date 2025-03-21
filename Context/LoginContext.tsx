@@ -109,6 +109,7 @@ export const LoginContextProvider = ( { children } : ChildrenType ) : React.JSX.
                                     if (user.user_type === "Farmers") navigator.push("/Drawer/(farmer)/FarmerHome")
                                     else if (user.user_type === "Buyers") navigator.push("/Drawer/(buyers)/BuyerHome")
                                     else throw new Error("Page Not Found")
+                                socket.emit("join", { id: user.data.userID, name: user.data.Name })
                                 }).catch( error =>
                                     {
                                         alert({type: "error-type", payload: "No Response"})

@@ -19,6 +19,14 @@ interface button
     onClick: () => void,
 };
 
+type chat =
+{
+    _id: string,
+    createdAt: string,
+    text: string,
+    user: string
+}
+
 type ChildrenType =
 {
     children : React.JSX.Element,
@@ -80,4 +88,4 @@ type UserType =
 
 
 
-export { ActionType, AlertProps, button, ChildrenType, ContractType, ProduceType, Request, Response, UserType,  };
+export { ActionType, AlertProps, button, chat, ChildrenType, ContractType, ProduceType, Request, Response, UserType,  };

@@ -38,6 +38,7 @@ export const UpdatesContextProvider = ({ children }: ChildrenType) => {
 
     useEffect(() => {
         const handleUpdates = (data: Record<string, any>) => {
+
             alert({ type: "error-type", payload: "New Updates" });
             alert({ type: "error-message", payload: `${Object.keys(data).length} Updates Found` });
             alert({ type: "show-alert", payload: true });
