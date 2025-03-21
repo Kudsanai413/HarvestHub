@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+    <input type="text" name="query" class="search" />
+
+{% endblock %}
+
+{% block javascript %}
+    const input = document.querySelector("input");
+    input.addEventListener("change", () =>
+    {
+        fetch(`/search/${ input.value }`)
+    })
+{% endblock %}

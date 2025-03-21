@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produce List</title>
+    <script defer src="app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .approve {
+            background-color: green;
+            color: white;
+            border: none;
+        }
+
+        .delete {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h2>Available Produce</h2>
+    <ul id="produce-list"></ul>
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            alert('Connected to WebSocket server');
+            fetchProduce();
+        });
+
+    async function fetchProduce() {
+        try {
+            const response = await fetch('http://localhost:5000/admin/webProduce');
+
+            if (!response.ok) throw new Error("Failed to retrieve data from Flask backend");
+
+            const data = await response.json();
+
+            if (data.data) {
+                const listElement = document.getElementById('produce-list');
+                listElement.innerHTML = ''; // Clear existing list
+
+                data.data.forEach(produce => {
+                    const item = document.createElement('li');
+                    item.innerHTML = `
+                ${produce.produceType} - ${produce.quantity} ${produce.unit_type} at $${produce.price}
+                <button class="approve" onclick="approveProduce('${produce.produceID}')">Approve</button>
+                <button class="delete" onclick="deleteProduce('${produce.produceID}')">Delete</button>
+            `;
+                    listElement.appendChild(item);
+                });
+
+            }
+
+
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+        function approveProduce(produceID) {
+            console.log(`Approved: ${produceID}`);
+            // Add logic to send approval request to the backend
+        }
+
+        async function deleteProduce(produceID) {
+            console.log(`Deleted: ${produceID}`);
+            const response = await fetch(`http://localhost:5000/delete-produce/${ produceID }`);
+            response.ok ? window.alert("Delete Successful") : window.alert("Delete Failed");
+
+            // Add logic to send delete request to the backend
+        }
+
+        document.addEventListener('DOMContentLoaded', () =>
+        {
+            fetchProduce();
+            socket.on("delete", (ID) => {
+                alert(`Item Deleted: ${ ID }`)
+            });
+        });
+    </script>
+</body>
+
+</html>

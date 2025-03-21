@@ -1,0 +1,26 @@
+#register-form {
+    flex-direction: row;
+    max-width: 70%;
+    min-height: 650px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    min-width: 375px;
+    min-height: 350px;
+    max-height: none;
+    margin-top: 75px;
+
+    && > input
+    {
+        margin: 25px;
+    }
+}
+
+#terms
+{
+    min-width: 75%;
+    min-height: 200px;
+    margin: 20px auto;
+    color: rgb(111, 123, 114);
+}
+
