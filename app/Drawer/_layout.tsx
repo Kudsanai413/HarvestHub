@@ -76,7 +76,7 @@ function CustomDrawer( { state, description } : props )
 				<Pressable
 					key={ i }
 					onPressOut={ () => setActive(route.name) }
-					onPress={ () => router.push(`/Drawer/${ route.name }`) }
+					onPress={ () => route.name === "Messages" ? router.push(`/Drawer/Messages/Chats`) : router.push(`/Drawer/${ route.name }`) }
 					style={{
 						width: "80%",
 						height: 45,

@@ -24,7 +24,22 @@ type chat =
     _id: string,
     createdAt: string,
     text: string,
-    user: string
+    receiver: string,
+    sender: string
+}
+
+type chatItem =
+{
+    id: string,
+    user: {
+        name: string,
+        avatar?: any
+    },
+    last_message: {
+        text: string,
+        time: string,
+        read: boolean
+    }
 }
 
 type ChildrenType =
@@ -88,4 +103,4 @@ type UserType =
 
 
 
-export { ActionType, AlertProps, button, chat, ChildrenType, ContractType, ProduceType, Request, Response, UserType,  };
+export { ActionType, AlertProps, button, chat, chatItem, ChildrenType, ContractType, ProduceType, Request, Response, UserType,  };

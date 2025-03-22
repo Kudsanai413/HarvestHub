@@ -18,6 +18,8 @@ import sw_potatoe from "@/assets/images/sweet.jpg"
 import dark_logo from "@/assets/images/hb3-dark.png"
 import another_1 from "@/assets/images/ally.jpg";
 import another_2 from "@/assets/images/farm.jpg";
+import farmer from "@/assets/images/farmer.jpg";
+// import http from "https://t3.ftcdn.net/jpg/05/54/85/18/360_F_554851847_UpV7nCMsu9JC2YY7LsTIdLMZtswceG0Z.jpg"
 
 
 
@@ -42,5 +44,6 @@ export const imgs = {
     chilli: chilli,
     farm: another_2,
     with: another_1,
+    farmer: farmer
 
 };

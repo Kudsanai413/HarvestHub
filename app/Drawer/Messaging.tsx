@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Bubble, GiftedChat, IMessage, MessageText, Time } from "react-native-gifted-chat";
-import { auth, database } from "../../fireBase.config";
-import { chat } from '@/Context/types';
-import { socket } from '@/assets/reusable/api';
+import { chat, Response, } from '@/Context/types';
+import { socket, database, createObject, Request  } from '@/assets/reusable/api';
 import { app_colors } from '@/assets/styles/colors';
 import useGetLoginContext from '@/Context/LoginContext';
+import useGetChatContext, { ChatContextProvider } from '@/Context/ChatContext';
 
 const chatMessages: IMessage[] = [
   {
@@ -130,40 +130,70 @@ interface ChatUser
 }
 
 export default function Messaging() {
-	const [messages, setMessages] = useState<IMessage[]>([]);
+	const [messages, setMessages] = useState<IMessage[]>([...chatMessages].reverse());
 	const [currUser, setCurrUser] = useState<ChatUser>(users[0]);
 	const destination = useRef<string>("");
+	const receiver = "07-423546 T 07"
 	const { state } = useGetLoginContext();
-useEffect(() => {
-	setCurrUser({
-		_id: state.user.userID,
-		name: state.user.Name
-	});
-}, [state.user.userID, state.user.Name]);
+	const { chatMessages: chattings } = useGetChatContext()
+	useEffect(() => {
+		setCurrUser({
+			_id: state.user.userID,
+			name: state.user.Name
+		});
 
-useEffect(() => {
-	if (currUser._id) {
-		destination.current = currUser._id === "07-423546 T 07" ? "63-3128050 M 07" : "07-423546 T 07";
-	}
-}, [currUser._id]);
+			alert(chattings)
+    /*
+      SELECT DISTINCT U.UserID, U.UserName FROM ChatMessages C INNER JOIN Users U ON C.ReceiverID = U.UserID WHERE C.SenderID = ?;
+    */
+		const sql : string = "Select * From ChatMessages Where SenderID=? and recieverID=?";
+		setTimeout(() =>
+			{
+				const object = createObject("POST", {
+					query: sql,
+					parameters: [currUser._id, receiver]
+				});
 
-useEffect(() => {
-	socket.emit("join", { id: state.user.userID, name: state.user.Name });
+				Request(`${ database }/generic`, object)
+				.then( (data: Response) =>
+					{
+						const newArray = data.data.map(({ reciever, ...chat }: any) => ({
+							...chat,
+							user: currUser
+						}));
+						alert(JSON.stringify(newArray));
 
-	socket.on("message", (message) => {
-		setMessages(prevMessages => {return [message, ...prevMessages]});
-	});
+					}).catch(err => alert(err));
+			}, 2000)
 
-	socket.on("send-error", (error) => alert(error));
+	}, [state.user.userID, state.user.Name]);
 
-	return () => {
-		socket.off("message");
-		socket.off("send-error");
-	};
-}, [state.user.userID, state.user.Name]);
+	useEffect(() => {
+		if (currUser._id) {
+			destination.current = currUser._id === "07-423546 T 07" ? "63-3128050 M 07" : "07-423546 T 07";
+		}
+	}, [currUser._id]);
+
+	useEffect(() => {
+		socket.emit("join", { id: state.user.userID, name: state.user.Name });
+
+		socket.on("message", (message) => {
+			setMessages(prevMessages => {return [message, ...prevMessages]});
+		});
+
+		socket.on("send-error", (error) => alert(error));
+
+		return () => {
+			socket.off("message");
+			socket.off("send-error");
+		};
+	}, [state.user.userID, state.user.Name]);
 
 
   return (
+	<>
+	<Text>{ JSON.stringify(chattings) }</Text>
+	<ChatContextProvider>
     <GiftedChat
 		messages={[...messages]}
 		showAvatarForEveryMessage={false}
@@ -183,46 +213,47 @@ useEffect(() => {
 		renderAvatarOnTop
 		user={currUser}
 		isScrollToBottomEnabled={true}
-		renderBubble={(props) => (
-			<>
-				<MessageText
-				{...props}
-				containerStyle={{
-					left: {
-						marginBottom: 15, minHeight: 50, maxWidth: "75%",
-						backgroundColor: app_colors.skeleton,
-						borderRadius: 10,
-						paddingVertical: "auto"
-					}, // Add margin below received messages
-					right: {
-						marginBottom: 15, minHeight: 50, maxWidth: "75%",
-						backgroundColor: app_colors.secondary,
-						borderRadius: 10,
-						paddingVertical: "auto"
-					} // Add margin below sent messages
-				}}
-				/>
-				{/* <Time
-					{...props}
-					timeTextStyle={{
-						left: { color: "#000", fontSize: 12,
-						 }, // Customize received time color
-						right: { color: "#000", fontSize: 12 }, // Customize sent time color
-					}}
-				/> */}
-			</>
-		)}
-
-		renderTime={(props) => (
-			<Time
-			{...props}
-			timeTextStyle={{
-				left: { color: "#000", fontSize: 12 }, // Customize received time color
-				right: { color: "#fff", fontSize: 12 }, // Customize sent time color
-			}}
-			/>
-		)}
+    renderBubble={(props) => (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        left: {
+			backgroundColor: app_colors.skeleton,
+			maxWidth: "70%",
+			borderRadius: 10,
+			marginBottom: 10, // Spacing between messages
+			justifyContent: "center", // Vertically align text
+        },
+        right: {
+			backgroundColor: app_colors.secondary,
+			maxWidth: "70%",
+			borderRadius: 10,
+			marginBottom: 10, // Spacing between messages
+        },
+      }}
+    />
+  )}
+  renderMessageText={(props) => (
+    <MessageText
+      {...props}
+      textStyle={{
+        left: { color: app_colors.black, fontSize: 16, textAlignVertical: "center" },
+        right: { color: app_colors.white, fontSize: 16, textAlignVertical: "center" },
+      }}
+    />
+  )}
+  renderTime={(props) => (
+    <Time
+      {...props}
+      timeTextStyle={{
+        left: { color: app_colors.black, fontSize: 12 },
+        right: { color: app_colors.white, fontSize: 12 },
+      }}
+    />
+  )}
 
     />
+	</ChatContextProvider>
+	</>
   )
 }
