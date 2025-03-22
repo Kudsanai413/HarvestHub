@@ -42,7 +42,6 @@ mail = Mail(app)
 old_version = 0
 curr_version = 0
 
-jsonData = dict()
 
 @app.route("/")
 def Index():
@@ -539,12 +538,20 @@ def handle_join(data):
 
 @app.route("/get/<table>/<column>/<id>")
 def getColumn(table, column, id):
+    print(column)
     sql = """
         Select {} From {}
         Where {}ID = ?
     """.format(
-        column, table, table[:-1] if table.endswith("s") else table
+        column,
+        table,
+        (
+            "senderID"
+            if table == "ChatMessages"
+            else table[:-1] if table.endswith("s") else table
+        ),
     )
+    print(sql)
 
     database = Database()
     result = database.execute(sql, [id])
@@ -558,86 +565,79 @@ def Hello():
     print("Thing Arriveed", end="\n\n\n\n")
     socket.emit("hello", "Genious")
 
-@socket.on("get-updates")
+
 def ManageUpdates():
     global old_version, curr_version
 
     try:
         database = Database()
 
-        # Get tables being tracked for changes
-        tables = database.execute("""
+        tables = database.execute(
+            """
             SELECT OBJECT_NAME(object_id)
             FROM sys.change_tracking_tables;
-        """)
+        """
+        )
 
-        if not tables:
-            return  # No tables to track
-
-        # Fetch primary keys for all tables in one go
-        primary_keys = {
-            table: database.execute("""
+        primary_keys = [
+            database.execute(
+                """
                 SELECT COLUMN_NAME
                 FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
                 WHERE TABLE_NAME = ?
                 AND OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + CONSTRAINT_NAME), 'IsPrimaryKey') = 1;
-            """, [table])[0]
-            for table in tables
-        }
+            """,
+                [table] )[0] for table in tables
+        ]
+
+        if old_version == 0:
+            old_version = database.version()
 
         while not stop_event.is_set():
             curr_version = database.version()
+
+            # Prepare queries
             get_updates = [
                 f"""
-                SELECT T.*, CT.SYS_CHANGE_OPERATION
-                FROM CHANGETABLE(CHANGES {table}, { old_version }) AS CT
-                LEFT JOIN {table} AS T ON CT.{primary_keys[table]} = T.{primary_keys[table]}
+                    SELECT T.*, CT.SYS_CHANGE_OPERATION
+                    FROM CHANGETABLE(CHANGES {table}, {old_version}) AS CT
+                    LEFT JOIN {table} AS T ON CT.{primary_keys[tables.index(table)]} = T.{primary_keys[tables.index(table)]}
                 """
                 for table in tables
-                if table in primary_keys
             ]
 
             updates = [database.execute(query) for query in get_updates]
 
-            if curr_version == old_version:
-                pass
+            if curr_version > old_version:
+                old_version = curr_version  # Update the version
 
-            else:
-                old_version = curr_version
-                updatings = list(filter(lambda update: not isinstance(update, str), updates))
-                theUpdates = updatings[0] if len(updatings) >= 1 else []
-                for row in theUpdates:
-                    global jsonData
-                    if  "contractID" in row:
-                        jsonData.update(
-                            {
-                                "Contracts": row
-                            }
-                        )
-
+                # Filter out errors
+                updatings = list(
+                    filter(lambda update: not isinstance(update, str), updates)
+                )
+                for row in updatings:
+                    print(row)
+                    if "contractID" in row:
+                        socket.emit("update-contracts", row)
+                        print("Upadated >>>> ",  row)
                     elif "produceID" in row:
-                        jsonData.update(
-                            {
-                                "Produce": row
-                            }
-                        )
-
+                        print("Upadated >>>> ", row)
+                        socket.emit("update-produce", row)
                     elif "requestID" in row:
-                        jsonData.update(
-                            {
-                                "Requests": row
-                            }
-                        )
+                        socket.emit("update-request", row)
+                        print("Upadated >>>> ", row)
 
-                    else:
-                        pass
-                print(old_version, " <- Old Version", curr_version, "<- Current Version", updatings, sep="\t", end="\n \n")
-                socket.emit("new-updates", jsonData)
+                    elif "_id" in row[0].keys():
+                        print("Upadated >>>> ", row)
+                        socket.emit("update-messages", row)
 
+                print(f"Old Version: {old_version}, Current Version: {curr_version}")
+                socket.emit("new-updates", updatings)
             time.sleep(2)
 
     except Exception as e:
         print(f"Error in ManageUpdates: {e}")
+
 
 @socket.on("send-message")
 def sendMessage(data):
@@ -647,7 +647,7 @@ def sendMessage(data):
     try:
         sql_statement = f"""
             Insert Into ChatMessages
-            Values(?, ?, ?, ?, ?)
+            Values(?, ?, ?, ?, ?, ?)
         """
 
         database = Database()
@@ -657,7 +657,8 @@ def sendMessage(data):
             "sender": message["user"]["_id"],
             "receiver": data["receiver"],
             "created": message["createdAt"],
-            "message": message["text"]
+            "message": message["text"],
+            "Read" : 0
 
         }
 
@@ -668,15 +669,75 @@ def sendMessage(data):
     except Exception as e:
         print("send-error", f"Error Occured While Sending Message \n\t {e}")
 
+@app.route("/getChats/<type>/<id>")
+def getChats(type,id):
+    socket.emit("event-works", "Event Is Working");
+    try:
+        sql_statement = f"""
+            Select messageID, recieverID,  createdAt, message from ChatMessages
+            Where { type }=?
+        """
+        database = Database()
+        chats = database.execute(sql_statement, [id])
+        if isinstance(chats, str):
+            return jsonify({
+                "error": "An Error Occurred",
+                "messsage": chats,
+                "data": None
+            })
+
+        return jsonify({
+            "error": None,
+            "message": None,
+            "data": chats
+        })
+    except Exception as e:
+        print(f"Hello There An That Error Occur {e}")
+
 
 @socket.on("connect")
 def SocketConnected():
     StartBackgroundThread(ManageUpdates=ManageUpdates)
     socket.emit("connected", "Socket Connected")
 
-# @socket.on("connecting")
-# def SocketConnecting():
-#     return "things alerting"
+
+@app.route("/generic", methods=["POST"])
+def Generic():
+    try:
+        database = Database()
+        result = database.execute(request.json["query"], request.json["parameters"])
+
+        print(request.json["query"], "Result >>>>>>", result[-1])
+        return jsonify({
+            "error": None,
+            "message": f"Search For { result }",
+            "data": None if isinstance(result, str) else result
+        })
+    except Exception as exc:
+        x = f"Failed To Get { exc }, ==>> { request["query"] }"
+        return jsonify({
+            "error": x
+        })
+
+@app.route("/getChatItem/<sender>/<table>")
+def getChatItem(sender, table):
+    item = "Farmers" if table == "Buyers" else "Buyers"
+    sql_statement = f"""
+        SELECT TOP 1 U.{ item[:-1] }ID, U.{ item[:-1] }Name, C.Message, C.CreatedAt
+        FROM ChatMessages C
+        INNER JOIN { item } U ON C.senderID = U.{ item[:-1] }ID
+        WHERE C.recieverID = ?
+        ORDER BY C.CreatedAt DESC;
+    """
+
+    database = Database()
+    result = database.execute(sql_statement, [sender])
+    return jsonify({
+        "error": None,
+        "message": f"Search For { result }",
+        "data": result
+    })
+
 
 @socket.on("disconnect")
 def SocketDisconnected():

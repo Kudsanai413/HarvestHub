@@ -1,21 +1,23 @@
 import pyodbc as database
 from constants import additional, format_name
+
+
 class Database:
     def __init__(this):
-        this.DRIVER: str = "{ODBC Driver 17 for SQL Server}"
+        this.DRIVER: str = "{ODBC Driver 18 for SQL Server}"
         this.SERVER: str = "GENIOUS\\MSSQLSERVER01"
         this.DATABASE: str = "HarvestHub"
         this.USER: str = "GENIOUS\\Lenovo"
         this.Password: int = 1004
         this.conn_string: str = (
-            f"DRIVER={ this.DRIVER };SERVER={ this.SERVER };DATABASE={ this.DATABASE };Trusted_Connection=yes"
+            f"DRIVER={ this.DRIVER };SERVER={ this.SERVER };DATABASE={ this.DATABASE };Trusted_Connection=yes;Encrypt=no"
         )
 
     def connect(this):
         try:
             return database.connect(this.conn_string)
         except database.Error as e:
-            print(f"Failed To Connect To DB { this.DATABASE }")
+            print(f"Failed To Connect To DB { this.DATABASE }, \n\n >>>>>>>>>>{ e }")
             return f"Failed To Connect To DB { this.DATABASE }"
 
         except Exception as e:
@@ -51,6 +53,8 @@ class Database:
         return result[0] if result else 0
 
     def switch(this, statement : str, record : list) -> dict | str:
+        if "C.Message, C.CreatedAt" in statement:
+            return this.jsonify(record, "chatItems")
         if "Buyers" in statement or "Farmers" in statement:
             return this.jsonify(record)
 
@@ -64,14 +68,13 @@ class Database:
             return this.jsonify(record, "requests")
 
         elif "ChatMessages" in statement:
-            return this.jsonify(record, "requests")
+            return this.jsonify(record, "chatmessages")
 
         elif "tables" in statement or "TABLE_NAME" in statement:
             return record[0]
 
         else:
             return record[0]
-
 
     def jsonify(this, record, type="user"):
         try:
@@ -112,11 +115,24 @@ class Database:
 
                 case "chatmessages":
                     return {
-                        "messageID": record[0],
+                        "_id": record[0],
                         "sender": record[1],
-                        "reciever": record[2],
-                        "createdAt": record[3],
-                        "message": record[4]
+                        "receiver": record[2],
+                        "createdAt": str(record[3]),
+                        "text": record[4],
+                        "read": record[5]
+                    }
+
+                case "chatItems":
+                    return{
+                        "id": record[0],
+                        "user": {
+                            "name": record[1]
+                        },
+                        "last_message": {
+                            "text": record[2],
+                            "time": record[3],
+                        }
                     }
 
                 case _:
@@ -133,5 +149,3 @@ class Database:
         except IndexError as e:
             found = [ row for row in record ]
             return found
-
-
