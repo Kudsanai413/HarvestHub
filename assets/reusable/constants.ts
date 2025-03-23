@@ -1,5 +1,6 @@
 import { UserType } from "@/Context/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format, isToday, isYesterday } from "date-fns";
 
 function formatName( name : string ) : string
 {
@@ -69,4 +70,17 @@ function type_of(object : any, type : string) : boolean
     return Object.keys(object).includes(type)
 }
 
-export { createSession, formatName, FileReadableFormat, getSession, type_of }
+
+const formatDate = (dateString: string): string => {
+  const date: Date = new Date(dateString);
+
+  if (isToday(date)) {
+    return format(date, "h:mm a");
+  } else if (isYesterday(date)) {
+    return "Yesterday";
+  } else {
+    return format(date, "MMM d, yyyy");
+  }
+};
+
+export { createSession, formatName, FileReadableFormat, getSession, type_of, formatDate }

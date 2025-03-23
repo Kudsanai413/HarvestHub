@@ -1,79 +1,83 @@
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
-import React from 'react';
-import { chatItem } from '@/Context/types';
-import { styling } from '@/assets/styles/global'
-import useGetFileContext from '@/Context/FileContext';
-import { app_colors } from '@/assets/styles/colors';
-import useGetChatContext from '@/Context/ChatContext';
-import { useRouter } from 'expo-router';
-
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native'
+import React from 'react'
+import { app_colors } from '@/assets/styles/colors'
+import useGetFileContext from '@/Context/FileContext'
+import { chatItem } from '@/Context/types'
+import { formatDate } from '@/assets/reusable/constants'
 
 interface props
 {
     chat: chatItem
 }
 
-export default function ChatListItem({ chat } : props) {
-    const { Image : img } = useGetFileContext();
-    const { setCurrChatName } = useGetChatContext();
-    const navigate = useRouter()
-    return (
-        <Pressable style={ stylinItem.container } onPress={() => {
-            setCurrChatName(chat.user.name);
-            navigate.push(`/Drawer/Messages/${ chat.id }`);
-        }}>
-            <Image source={ img.farmer } style={ stylinItem.profile_image } />
-            <View style={ stylinItem.userBand }>
-                <Text style={ stylinItem.userName }> { chat.user.name } </Text>
-                <Text style={ stylinItem.message }> { chat.last_message.text }</Text>
-            </View>
-            <Text style={ stylinItem.time }>{ chat.last_message.time }</Text>
-            <Text style={ stylinItem.bubble }>99+</Text>
-        </Pressable>
-    )
+export default function ChatListItem({ chat }: props) {
+    const { Image: img } = useGetFileContext();
+  return (
+    <Pressable style={ stylingItem.container }>
+        <Image source={ img.with } style={ stylingItem.profile_image }/>
+        <View style={ stylingItem.InfoBand }>
+            <Text style={ stylingItem.Name }>{ chat.user.name }</Text>
+            <Text style={ stylingItem.message }>{ chat.last_message.text }</Text>
+        </View>
+        <Text style={ stylingItem.badge }>99+</Text>
+        <Text style={ stylingItem.time }>{ formatDate(chat.last_message.time) }</Text>
+    </Pressable>
+  )
 }
 
-const stylinItem = StyleSheet.create(
+const stylingItem = StyleSheet.create(
     {
         container:
         {
-            width: "95%",
+            width: "96%",
             height: 90,
-            flexDirection: "row",
             marginHorizontal: "auto",
-            position: "relative"
+            flexDirection: "row",
+            alignItems: "center",
+            position: "relative",
+            borderRadius: 10
         },
+
         profile_image:
         {
             width: 60,
             height: 60,
             borderRadius: "50%",
-            marginVertical: "auto"
         },
-        userBand:
+
+        InfoBand:
         {
-            height: "98%",
-            paddingTop: 15,
+            width: "70%",
+            height: "99%",
         },
+
+        Name:
+        {
+            textAlignVertical: "center",
+            fontWeight: 500,
+            fontSize: 18,
+            marginTop:15,
+            marginLeft: 5
+        },
+
+        message:
+        {
+            fontSize: 14,
+            fontWeight: "300",
+            marginTop: 7,
+            marginLeft: 15
+        },
+
         time:
         {
             position: "absolute",
+            top: 10,
             right: 10,
-            bottom: 10,
-            fontSize: 10,
-            fontStyle: "italic",
+            fontWeight: 100,
+            fontSize: 10
         },
-        userName:
-        {
-            fontWeight: 600,
-            fontSize: 17
-        },
-        message:
-        {
-            paddingLeft: 8,
-            fontWeight: "200"
-        },
-        bubble:
+
+        badge:
         {
             width: 28,
             height: 28,
@@ -81,10 +85,10 @@ const stylinItem = StyleSheet.create(
             backgroundColor: app_colors.primary,
             textAlign: "center",
             textAlignVertical: "center",
-            paddingTop: 3,
             position: "absolute",
-            right: 5,
-            top: 20
+            top: 35,
+            right: 10,
+            paddingTop: 3
         }
     }
 )

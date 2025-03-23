@@ -25,10 +25,11 @@ type chat =
     createdAt: string,
     text: string,
     receiver: string,
-    sender: string
+    sender: string,
+    read: string
 }
 
-type chatItem =
+interface chatItem
 {
     id: string,
     user: {
@@ -37,8 +38,7 @@ type chatItem =
     },
     last_message: {
         text: string,
-        time: string,
-        read: boolean
+        time: string
     }
 }
 

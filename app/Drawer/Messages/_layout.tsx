@@ -1,20 +1,21 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Stack } from 'expo-router'
-import { ChatContextProvider } from '@/Context/ChatContext'
+import { Stack } from "expo-router";
+import React from 'react';
+import { ChatContextProvider } from '@/Context/ChatContext';
 
-export default function _layout() {
-  return (
-    <ChatContextProvider>
-        <Stack
-            screenOptions={{
-                headerShown: false
-            }}
-            >
-            <Stack.Screen name="chats" />
-            <Stack.Screen name="[id]"/>
-        </Stack>
-    </ChatContextProvider>
+export default function ChatRootLayout() {
 
-  )
+	return(
+        <ChatContextProvider>
+            <Stack
+                screenOptions={{
+                    headerShown: false
+                }}
+                >
+                <Stack.Screen name="Chats" />
+                <Stack.Screen name="[id]"/>
+            </Stack>
+        </ChatContextProvider>
+
+	);
 }
+
