@@ -57,6 +57,7 @@ type ContractType =
     status: boolean,
     startDate: string,
     finishDate: string,
+    type? : string
 };
 
 

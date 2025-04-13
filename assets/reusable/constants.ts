@@ -5,8 +5,18 @@ import { format, isToday, isYesterday } from "date-fns";
 function formatName( name : string ) : string
 {
     let formatted_name : string = ""
+    if (!name.includes(" ")) return name.charAt(0)
     const the_name : string[] = name.split(" ");
     the_name.map( (word : string) => the_name.indexOf(word) < the_name.length - 1 ? formatted_name += `${word.charAt(0)} .` : formatted_name += word);
+    return formatted_name;
+}
+
+function formatNameInitials( name : string ) : string
+{
+    let formatted_name : string = ""
+    if (!name.includes(" ")) return name.charAt(0)
+    const the_name : string[] = name.split(" ");
+    the_name.map( (word : string) => formatted_name += word.charAt(0));
     return formatted_name;
 }
 
@@ -83,4 +93,4 @@ const formatDate = (dateString: string): string => {
   }
 };
 
-export { createSession, formatName, FileReadableFormat, getSession, type_of, formatDate }
+export { createSession, formatName, formatNameInitials, FileReadableFormat, getSession, type_of, formatDate }
