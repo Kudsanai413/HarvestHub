@@ -4,22 +4,35 @@ import { app_colors } from '@/assets/styles/colors'
 import useGetFileContext from '@/Context/FileContext'
 import { chatItem } from '@/Context/types'
 import { formatDate } from '@/assets/reusable/constants'
+import useGetChatContext from '@/Context/ChatContext'
+import { useRouter } from 'expo-router'
+import { socket } from '@/assets/reusable/api'
 
 interface props
 {
-    chat: chatItem
+    chat: chatItem,
+    myLast?: chatItem,
+    masterKey: string
 }
 
-export default function ChatListItem({ chat }: props) {
+export default function ChatListItem({ chat, masterKey}: props) {
     const { Image: img } = useGetFileContext();
+    const { setCurrChatName } = useGetChatContext();
+    const navigate = useRouter()
   return (
-    <Pressable style={ stylingItem.container }>
+    <Pressable style={ stylingItem.container }
+        onPress={() => {
+            setCurrChatName(chat.user.name);
+            setTimeout(() => { navigate.push(`/Drawer/Messages/${ chat.id }`)}, 250)
+            if (chat.last_message.count > 0) socket.emit("read-messages", masterKey);
+        }}
+    >
         <Image source={ img.with } style={ stylingItem.profile_image }/>
         <View style={ stylingItem.InfoBand }>
             <Text style={ stylingItem.Name }>{ chat.user.name }</Text>
             <Text style={ stylingItem.message }>{ chat.last_message.text }</Text>
         </View>
-        <Text style={ stylingItem.badge }>99+</Text>
+        <Text style={{ ...stylingItem.badge, display: chat.last_message.count > 0 ? "flex" : "none",  }}>{ chat.last_message.count }</Text>
         <Text style={ stylingItem.time }>{ formatDate(chat.last_message.time) }</Text>
     </Pressable>
   )
@@ -83,12 +96,12 @@ const stylingItem = StyleSheet.create(
             height: 28,
             borderRadius: "50%",
             backgroundColor: app_colors.primary,
-            textAlign: "center",
-            textAlignVertical: "center",
+            justifyContent: "center",
             position: "absolute",
             top: 35,
             right: 10,
-            paddingTop: 3
+            alignItems: "center",
+            fontWeight: "600"
         }
     }
 )

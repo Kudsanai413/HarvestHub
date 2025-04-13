@@ -22,7 +22,7 @@ interface button
 type chat =
 {
     _id: string,
-    createdAt: string,
+    createdAt: any | Date,
     text: string,
     receiver: string,
     sender: string,
@@ -38,7 +38,8 @@ interface chatItem
     },
     last_message: {
         text: string,
-        time: string
+        time: string,
+        count: number
     }
 }
 
@@ -81,13 +82,14 @@ type Response =
 type Request =
 {
     request: string,
-    farmer: string,
-    buyer: string,
+    buyerORfarmer: string,
+    location: string,
     crop: string,
+    grade: string
     quantity: number,
     price: number,
     status: string,
-    created: string
+    perpID: string
 }
 
 

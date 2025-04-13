@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
 import React from 'react';
-import { ChatContextProvider } from '@/Context/ChatContext';
+import useGetChatContext, { ChatContextProvider } from '@/Context/ChatContext';
 
 export default function ChatRootLayout() {
-
+    const { currChatName } = useGetChatContext()
 	return(
         <ChatContextProvider>
             <Stack
@@ -11,8 +11,9 @@ export default function ChatRootLayout() {
                     headerShown: false
                 }}
                 >
-                <Stack.Screen name="Chats" />
-                <Stack.Screen name="[id]"/>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="[id]" />
+                <Stack.Screen name="Updates"/>
             </Stack>
         </ChatContextProvider>
 

@@ -218,10 +218,8 @@ export default function IndividualPage() {
                                         {
                                             buyer: logged.user?.userID,
                                             farmer: currProduce.farmerID,
-                                            crop: items.product,
+                                            crop: id,
                                             quantity: items.quantity,
-                                            price: items.price,
-                                            status: "Pending"
                                         })
                                     Request(`${ database }/admin/requests`, object)
                                     .then((response : Response) =>
